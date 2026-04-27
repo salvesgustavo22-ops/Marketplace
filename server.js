@@ -104,8 +104,14 @@ app.get('/admin', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`Servidor rodando em http://localhost:${PORT}`);
-  console.log(`Painel admin: http://localhost:${PORT}/admin`);
-  console.log(`Token admin: ${ADMIN_TOKEN}`);
-});
+// Exportar a aplicação Express para uso como módulo (Vercel)
+module.exports = app;
+
+// Iniciar servidor apenas se não estiver sendo importado como módulo
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log(`Painel admin: http://localhost:${PORT}/admin`);
+    console.log(`Token admin: ${ADMIN_TOKEN}`);
+  });
+}

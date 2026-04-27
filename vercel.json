@@ -1,18 +1,3 @@
 {
-  "version": 2,
-  "buildCommand": "echo 'Build completed'",
-  "outputDirectory": "public",
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "server.js"
-    },
-    {
-      "source": "/admin",
-      "destination": "server.js"
-    }
-  ]
+  "version": 2
 }
