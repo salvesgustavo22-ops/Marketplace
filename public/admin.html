@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Admin — Leads TRF3</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue-900: #0f2040;
+      --blue-600: #1e50a0;
+      --blue-500: #2563eb;
+      --blue-100: #dbeafe;
+      --green: #16a34a;
+      --green-light: #dcfce7;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-400: #9ca3af;
+      --gray-600: #4b5563;
+      --gray-800: #1f2937;
+      --white: #ffffff;
+      --danger: #dc2626;
+      --gold: #f59e0b;
+      --font: 'Inter', system-ui, sans-serif;
+      --radius: 10px;
+      --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    body { font-family: var(--font); background: var(--gray-50); color: var(--gray-800); min-height: 100vh; }
+
+    /* Login */
+    .login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .login-box {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+      width: 100%;
+      max-width: 380px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .login-box h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--blue-900);
+      text-align: center;
+    }
+    .login-box p { text-align: center; color: var(--gray-600); font-size: 0.9rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-label { font-size: 0.88rem; font-weight: 600; color: var(--gray-800); }
+    .form-input {
+      padding: 0.7rem 1rem;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: var(--blue-500); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    .btn-login {
+      background: var(--blue-500);
+      color: var(--white);
+      border: none;
+      border-radius: 8px;
+      padding: 0.8rem;
+      font-family: var(--font);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    .btn-login:hover { background: var(--blue-600); }
+    .login-error {
+      background: #fee2e2;
+      color: var(--danger);
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      padding: 0.7rem 1rem;
+      font-size: 0.88rem;
+      text-align: center;
+      display: none;
+    }
+
+    /* Dashboard */
+    .dashboard { display: none; }
+
+    .top-bar {
+      background: var(--blue-900);
+      padding: 0 1.5rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .top-bar__brand { color: var(--white); font-size: 1.1rem; font-weight: 700; }
+    .top-bar__actions { display: flex; align-items: center; gap: 1rem; }
+    .btn-sm {
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-family: var(--font);
+      transition: opacity 0.2s;
+    }
+    .btn-sm:hover { opacity: 0.85; }
+    .btn-sm--white { background: var(--white); color: var(--blue-900); }
+    .btn-sm--danger { background: #fee2e2; color: var(--danger); }
+    .btn-sm--green { background: var(--green-light); color: var(--green); }
+
+    .main-content { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--blue-500);
+    }
+    .stat-card__label { font-size: 0.82rem; color: var(--gray-600); font-weight: 500; margin-bottom: 0.3rem; }
+    .stat-card__value { font-size: 2rem; font-weight: 800; color: var(--blue-900); }
+
+    .table-section {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .table-toolbar {
+      padding: 1rem 1.5rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .table-toolbar h2 { font-size: 1.1rem; font-weight: 700; color: var(--blue-900); flex: 1; }
+
+    .search-input {
+      padding: 0.5rem 0.9rem;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 7px;
+      font-family: var(--font);
+      font-size: 0.9rem;
+      outline: none;
+      width: 220px;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--blue-500); }
+
+    .table-wrapper { overflow-x: auto; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    thead { background: var(--gray-50); }
+    th {
+      padding: 0.9rem 1rem;
+      text-align: left;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--gray-200);
+      white-space: nowrap;
+    }
+    td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--gray-100);
+      color: var(--gray-800);
+      vertical-align: top;
+      max-width: 220px;
+      word-break: break-word;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--gray-50); }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 50px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .badge--basico { background: var(--blue-100); color: var(--blue-600); }
+    .badge--mentoria { background: #fef3c7; color: #92400e; }
+    .badge--nao-sei { background: var(--gray-100); color: var(--gray-600); }
+    .badge--formulario { background: var(--green-light); color: var(--green); }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem;
+      border-top: 1px solid var(--gray-100);
+    }
+    .page-btn {
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid var(--gray-200);
+      background: var(--white);
+      font-size: 0.88rem;
+      cursor: pointer;
+      font-family: var(--font);
+      transition: all 0.15s;
+    }
+    .page-btn:hover:not(:disabled) { background: var(--blue-100); border-color: var(--blue-400); }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .page-btn.active { background: var(--blue-500); color: var(--white); border-color: var(--blue-500); }
+    .page-info { font-size: 0.85rem; color: var(--gray-600); margin: 0 0.5rem; }
+
+    .empty-state {
+      padding: 3rem;
+      text-align: center;
+      color: var(--gray-400);
+      font-size: 0.95rem;
+    }
+
+    .loading { padding: 2rem; text-align: center; color: var(--gray-400); }
+  </style>
+</head>
+<body>
+
+  <!-- Login -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <h1>⚖️ Painel Admin</h1>
+      <p>TRF3 Sem Advogado — Gestão de Leads</p>
+      <div class="form-group">
+        <label class="form-label" for="tokenInput">Token de acesso</label>
+        <input class="form-input" type="password" id="tokenInput"
+               placeholder="Digite o token de administrador" autocomplete="current-password" />
+      </div>
+      <button class="btn-login" id="btnLogin">Entrar</button>
+      <div class="login-error" id="loginError">Token inválido. Tente novamente.</div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dashboard" id="dashboard">
+
+    <header class="top-bar">
+      <div class="top-bar__brand">⚖️ Admin — Leads TRF3</div>
+      <div class="top-bar__actions">
+        <button class="btn-sm btn-sm--green" id="btnExport">⬇ Exportar CSV</button>
+        <button class="btn-sm btn-sm--white" id="btnRefresh">↺ Atualizar</button>
+        <button class="btn-sm btn-sm--danger" id="btnLogout">Sair</button>
+      </div>
+    </header>
+
+    <main class="main-content">
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card__label">Total de Leads</div>
+          <div class="stat-card__value" id="statTotal">—</div>
+        </div>
+        <div class="stat-card" style="border-left-color: var(--gold)">
+          <div class="stat-card__label">Interesse em Mentoria</div>
+          <div class="stat-card__value" id="statMentoria">—</div>
+        </div>
+        <div class="stat-card" style="border-left-color: var(--green)">
+          <div class="stat-card__label">Guia Básico</div>
+          <div class="stat-card__value" id="statBasico">—</div>
+        </div>
+      </div>
+
+      <div class="table-section">
+        <div class="table-toolbar">
+          <h2>Formulários de Interesse</h2>
+          <input class="search-input" type="search" id="searchInput"
+                 placeholder="Buscar por nome, e-mail..." />
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>WhatsApp</th>
+                <th>Interesse</th>
+                <th>Mensagem</th>
+                <th>Data</th>
+              </tr>
+            </thead>
+            <tbody id="leadsBody">
+              <tr><td colspan="7" class="loading">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination" id="pagination"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    let adminToken = '';
+    let currentPage = 1;
+    let totalLeads = 0;
+    const LIMIT = 20;
+    let searchTimer = null;
+
+    // Login
+    document.getElementById('btnLogin').addEventListener('click', login);
+    document.getElementById('tokenInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') login();
+    });
+
+    async function login() {
+      const token = document.getElementById('tokenInput').value.trim();
+      if (!token) return;
+      const res = await fetch(`/api/admin/leads?limite=1&token=${encodeURIComponent(token)}`);
+      if (res.ok) {
+        adminToken = token;
+        sessionStorage.setItem('adminToken', token);
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        loadLeads();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+      }
+    }
+
+    // Auto-login from session
+    const saved = sessionStorage.getItem('adminToken');
+    if (saved) {
+      document.getElementById('tokenInput').value = saved;
+      login();
+    }
+
+    // Logout
+    document.getElementById('btnLogout').addEventListener('click', () => {
+      sessionStorage.removeItem('adminToken');
+      adminToken = '';
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('loginScreen').style.display = 'flex';
+      document.getElementById('tokenInput').value = '';
+    });
+
+    // Refresh
+    document.getElementById('btnRefresh').addEventListener('click', () => loadLeads());
+
+    // Search
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        currentPage = 1;
+        loadLeads(e.target.value.trim());
+      }, 350);
+    });
+
+    // Export CSV
+    document.getElementById('btnExport').addEventListener('click', () => {
+      window.open(`/api/admin/leads/csv?token=${encodeURIComponent(adminToken)}`, '_blank');
+    });
+
+    async function loadLeads(search = '') {
+      const body = document.getElementById('leadsBody');
+      body.innerHTML = '<tr><td colspan="7" class="loading">Carregando...</td></tr>';
+
+      const url = `/api/admin/leads?pagina=${currentPage}&limite=${LIMIT}&busca=${encodeURIComponent(search)}&token=${encodeURIComponent(adminToken)}`;
+      const res = await fetch(url);
+      if (!res.ok) return;
+      const data = await res.json();
+
+      totalLeads = data.total;
+      renderStats(data.leads);
+      renderTable(data.leads);
+      renderPagination(data.total, search);
+    }
+
+    function renderStats(leads) {
+      fetch(`/api/admin/leads?limite=9999&token=${encodeURIComponent(adminToken)}`)
+        .then(r => r.json())
+        .then(d => {
+          document.getElementById('statTotal').textContent = d.total;
+          const mentoria = d.leads.filter(l => l.interesse === 'mentoria').length;
+          const basico = d.leads.filter(l => l.interesse === 'guia-basico').length;
+          document.getElementById('statMentoria').textContent = mentoria;
+          document.getElementById('statBasico').textContent = basico;
+        });
+    }
+
+    function renderTable(leads) {
+      const body = document.getElementById('leadsBody');
+      if (!leads.length) {
+        body.innerHTML = '<tr><td colspan="7" class="empty-state">Nenhum lead encontrado.</td></tr>';
+        return;
+      }
+
+      body.innerHTML = leads.map(l => `
+        <tr>
+          <td><strong>${l.id}</strong></td>
+          <td>${escHtml(l.nome)}</td>
+          <td><a href="mailto:${escHtml(l.email)}" style="color:#2563eb">${escHtml(l.email)}</a></td>
+          <td>
+            ${l.telefone
+              ? `<a href="https://wa.me/55${l.telefone.replace(/\D/g,'')}" target="_blank" rel="noopener" style="color:#16a34a">${escHtml(l.telefone)}</a>`
+              : '<span style="color:#9ca3af">—</span>'}
+          </td>
+          <td>${badgeInteresse(l.interesse)}</td>
+          <td style="font-size:0.85rem;color:#4b5563">${escHtml(l.mensagem || '—')}</td>
+          <td style="font-size:0.82rem;white-space:nowrap;color:#6b7280">${formatDate(l.criado_em)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderPagination(total, search) {
+      const totalPages = Math.ceil(total / LIMIT);
+      const pg = document.getElementById('pagination');
+      if (totalPages <= 1) { pg.innerHTML = ''; return; }
+
+      let html = `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goPage(${currentPage - 1}, '${escHtml(search)}')">‹</button>`;
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || Math.abs(i - currentPage) <= 2) {
+          html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i}, '${escHtml(search)}')">${i}</button>`;
+        } else if (Math.abs(i - currentPage) === 3) {
+          html += `<span class="page-info">…</span>`;
+        }
+      }
+      html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goPage(${currentPage + 1}, '${escHtml(search)}')">›</button>`;
+      html += `<span class="page-info">${total} leads</span>`;
+      pg.innerHTML = html;
+    }
+
+    function goPage(page, search) {
+      currentPage = page;
+      loadLeads(search);
+    }
+
+    function badgeInteresse(v) {
+      const map = {
+        'guia-basico': ['badge--basico', 'Guia Básico'],
+        'mentoria':    ['badge--mentoria', 'Mentoria'],
+        'nao-sei':     ['badge--nao-sei', 'Não sabe'],
+        '':            ['badge--formulario', 'Formulário']
+      };
+      const [cls, label] = map[v] || ['badge--formulario', v || '—'];
+      return `<span class="badge ${cls}">${label}</span>`;
+    }
+
+    function formatDate(str) {
+      if (!str) return '—';
+      const d = new Date(str);
+      return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function escHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+  </script>
+</body>
+</html>
