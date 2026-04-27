@@ -1,28 +1,18 @@
 {
   "version": 2,
-  "public": false,
-  "buildCommand": "npm run build",
+  "buildCommand": "echo 'Build completed'",
   "outputDirectory": "public",
   "env": {
     "NODE_ENV": "production"
   },
-  "functions": {
-    "server.js": {
-      "runtime": "nodejs22.x"
-    }
-  },
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "server.js"
+      "source": "/api/(.*)",
+      "destination": "server.js"
     },
     {
-      "src": "/admin",
-      "dest": "server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/public/$1"
+      "source": "/admin",
+      "destination": "server.js"
     }
   ]
 }
